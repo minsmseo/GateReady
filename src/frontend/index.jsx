@@ -230,7 +230,7 @@ const GateVerdict = ({ gate, result, canEdit, busy, onPass }) => {
   }
   if (summary.needsReview > 0) {
     return (
-      <SectionMessage appearance="warning" title={`Evidence is in place, ${summary.needsReview} item${summary.needsReview === 1 ? '' : 's'} need a reviewer's judgement`}>
+      <SectionMessage appearance="warning" title={`Evidence is in place, ${summary.needsReview} item${summary.needsReview === 1 ? ' needs' : 's need'} a reviewer's judgement`}>
         <Stack space="space.100">
           <Text>No requirement is failing. The items marked "Needs review" cannot be decided by a rule; look at them before the gate decision.</Text>
           {passButton}
@@ -313,7 +313,7 @@ const PassGateModal = ({ gate, summary, busy, onConfirm, onClose }) => {
               ? `All ${summary.total} evidence requirements are met.`
               : `${[
                   summary.notMet ? `${summary.notMet} requirement${summary.notMet === 1 ? ' is' : 's are'} not met` : null,
-                  summary.needsReview ? `${summary.needsReview} need${summary.needsReview === 1 ? 's' : ''} a reviewer's judgement` : null,
+                  summary.needsReview ? `${summary.needsReview} requirement${summary.needsReview === 1 ? ' needs' : 's need'} a reviewer's judgement` : null,
                 ]
                   .filter(Boolean)
                   .join(' and ')}. Passing with open items is a decision for the gate review; the readiness of ${summary.readiness}% is recorded with the gate.`}

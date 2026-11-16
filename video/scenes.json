@@ -1,0 +1,100 @@
+{
+  "subs": {
+    "1": "GateReady. Know before the gate review.",
+    "2": "Automotive suppliers develop parts through phase gates. Before each gate review, a quality engineer checks by hand that every piece of evidence is in place.",
+    "3": "Is the PFMEA approved? Does the Control Plan reflect the last design change? Is any high-risk item still open?",
+    "4": "The evidence already lives in Confluence and Jira. Checking it takes hours, and what gets missed shows up in the review or in a customer audit.",
+    "5": "GateReady is a Forge app inside the Jira project. One click checks every gate against live Jira and Confluence data.",
+    "6": "Brake Sensor Housing is 88 percent ready for the Process Design gate.",
+    "7": "GateReady checks validity, not just existence. The PFMEA is approved and has every required section, but Recommended Actions only says \"TBD\". So it asks a person to look.",
+    "8": "EV Battery Bracket uses the same template and sits at the same gate. It is 38 percent ready.",
+    "9": "The PFMEA is still in progress. The Control Plan is approved, but older than the last design change. The MSA plan is missing, and two high-risk items are open.",
+    "10": "Every verdict comes with the finding and a link to the evidence.",
+    "11": "Each gap becomes a Jira work item, assigned to the owner of that evidence, with the finding and links attached.",
+    "12": "Run it again and nothing is duplicated.",
+    "13": "The owner updates the Control Plan. Check again.",
+    "14": "Readiness moves from 38 to 50 percent, and GateReady shows exactly which requirement changed.",
+    "15": "Every check is kept in the gate's history: when, by whom, and how ready it was. That is the audit trail.",
+    "16": "Gates, rules, owners and the linked Confluence space are configured per project.",
+    "17": "Six rule types cover documents and work items: exists, approved, up to date, required sections, all done, and none open.",
+    "18": "Start from the APQP template, copy another project's plan, or build your own.",
+    "19": "The Gate Review Agent runs the same deterministic check in conversation and explains each finding.",
+    "20": "Rules cannot judge whether content is good enough, so the agent reads the document and gives an opinion, clearly marked as advisory. It never changes a verdict.",
+    "21": "Before it writes anything, it shows what it will create and asks.",
+    "22": "The review summary is waiting as a Confluence draft: readiness, open gaps, the evidence checklist, and a place for the decision.",
+    "23": "After the review, record the gate as passed. GateReady saves the date and the readiness at that moment, and moves the project to its next gate.",
+    "24": "The same six actions are exposed as an MCP server and packaged as a reusable skill, so other agents can prepare gate reviews too.",
+    "25": "GateReady runs entirely on Atlassian. No data leaves the platform.",
+    "26": "GateReady. For quality engineers and project managers who need to know before the gate review, not during it."
+  },
+  "shots": [
+    { "card": "title", "dur": 6, "sub": 1 },
+
+    { "image": "frames/p1_pfmea_page.png", "dur": 12, "sub": 2 },
+    { "image": "frames/p1_pfmea_page.png", "dur": 10, "sub": 3, "box": [478, 228, 578, 256] },
+    { "image": "frames/09_issue.png", "dur": 6, "sub": 4 },
+    { "image": "frames/10_cp_page.png", "dur": 6, "sub": 4 },
+
+    { "image": "frames/01_bsh_before.png", "dur": 5, "sub": 5, "click": [1002, 157] },
+    { "image": "frames/02_bsh_after.png", "dur": 6, "sub": 5 },
+    { "image": "frames/02_bsh_after.png", "dur": 6, "sub": 6, "box": [44, 306, 880, 352] },
+    { "image": "frames/03_bsh_banner.png", "dur": 6, "sub": 7 },
+    { "image": "frames/03_bsh_banner.png", "dur": 9, "sub": 7, "box": [30, 494, 1072, 560] },
+
+    { "image": "frames/04_evb_top.png", "dur": 9, "sub": 8, "box": [44, 306, 880, 352] },
+    { "image": "frames/05_evb_banner.png", "dur": 6, "sub": 9 },
+    { "image": "frames/06_evb_table.png", "dur": 8, "sub": 9 },
+    { "image": "frames/06_evb_table.png", "dur": 7, "sub": 10, "box": [656, 28, 860, 600] },
+
+    { "image": "frames/07_gap_modal.png", "dur": 4.5, "sub": 11, "click": [863, 356] },
+    { "image": "frames/08_gap_created.png", "dur": 5.5, "sub": 11 },
+    { "image": "frames/09_issue.png", "dur": 5, "sub": 12 },
+
+    { "image": "frames/10_cp_page.png", "dur": 5, "sub": 13, "box": [700, 60, 870, 92] },
+    { "image": "frames/11_delta.png", "dur": 9, "sub": 14, "box": [40, 370, 1068, 454] },
+    { "image": "frames/12_history.png", "dur": 11, "sub": 15, "box": [34, 462, 1072, 590] },
+
+    { "image": "frames/13_settings.png", "dur": 7, "sub": 16, "box": [40, 148, 1068, 310] },
+    { "image": "frames/14_req_modal.png", "dur": 3.5, "sub": 17, "click": [553, 248] },
+    { "image": "frames/15_rules.png", "dur": 6.5, "sub": 17 },
+    { "image": "frames/13_settings.png", "dur": 7, "sub": 18, "box": [472, 338, 1072, 380] },
+
+    { "image": "frames/16_agent_pick.png", "dur": 3, "sub": 19, "click": [840, 341] },
+    { "image": "frames/17_agent_ready.png", "dur": 2.5, "sub": 19 },
+    { "image": "frames/19_chat_answer.png", "dur": 5.5, "sub": 19 },
+    { "image": "frames/20_chat_pfmea.png", "dur": 15, "sub": 20, "box": [362, 384, 1060, 500] },
+    { "image": "frames/21_chat_propose.png", "dur": 3.5, "sub": 21 },
+    { "image": "frames/22_chat_confirm.png", "dur": 3.5, "sub": 21, "click": [899, 420] },
+    { "image": "frames/23_draft.png", "dur": 11, "sub": 22 },
+
+    { "image": "frames/24_pass_modal.png", "dur": 5, "sub": 23, "click": [765, 262] },
+    { "image": "frames/25_passed.png", "dur": 8, "sub": 23, "box": [44, 306, 930, 396] },
+
+    {
+      "card": "bullets",
+      "title": "Built on Atlassian Forge",
+      "bullets": [
+        ["Rovo agent with six actions", "Checks, explains, assigns gaps and drafts the review summary"],
+        ["MCP server", "The same actions as tools for other agents and MCP clients"],
+        ["Reusable skill", "The gate review procedure, packaged for any Rovo agent"],
+        ["Runs on Atlassian", "Forge hosted storage only. No external services, no egress"]
+      ],
+      "dur": 12,
+      "sub": 24
+    },
+    {
+      "card": "bullets",
+      "title": "Built on Atlassian Forge",
+      "bullets": [
+        ["Rovo agent with six actions", "Checks, explains, assigns gaps and drafts the review summary"],
+        ["MCP server", "The same actions as tools for other agents and MCP clients"],
+        ["Reusable skill", "The gate review procedure, packaged for any Rovo agent"],
+        ["Runs on Atlassian", "Forge hosted storage only. No external services, no egress"]
+      ],
+      "dur": 6,
+      "sub": 25,
+      "cut": true
+    },
+    { "card": "closing", "tagline": "Know before the gate review, not during it.", "footer": "github.com/minsmseo/GateReady", "dur": 10, "sub": 26 }
+  ]
+}

@@ -150,3 +150,7 @@ vite.config.ts.timestamp-*
 
 # Forge CLI local state
 /.forge/
+
+# Demo video build output and raw captures
+/video/out/
+/video/frames/

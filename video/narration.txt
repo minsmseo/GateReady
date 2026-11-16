@@ -1,0 +1,54 @@
+GateReady demo narration. Start each line at its time; finish before the next one.
+
+[00:00 - 00:06]  GateReady. Know before the gate review.
+
+[00:06 - 00:18]  Automotive suppliers develop parts through phase gates. Before each gate review, a quality engineer checks by hand that every piece of evidence is in place.
+
+[00:18 - 00:28]  Is the PFMEA approved? Does the Control Plan reflect the last design change? Is any high-risk item still open?
+
+[00:28 - 00:40]  The evidence already lives in Confluence and Jira. Checking it takes hours, and what gets missed shows up in the review or in a customer audit.
+
+[00:40 - 00:51]  GateReady is a Forge app inside the Jira project. One click checks every gate against live Jira and Confluence data.
+
+[00:51 - 00:57]  Brake Sensor Housing is 88 percent ready for the Process Design gate.
+
+[00:57 - 01:12]  GateReady checks validity, not just existence. The PFMEA is approved and has every required section, but Recommended Actions only says "TBD". So it asks a person to look.
+
+[01:12 - 01:21]  EV Battery Bracket uses the same template and sits at the same gate. It is 38 percent ready.
+
+[01:21 - 01:35]  The PFMEA is still in progress. The Control Plan is approved, but older than the last design change. The MSA plan is missing, and two high-risk items are open.
+
+[01:35 - 01:42]  Every verdict comes with the finding and a link to the evidence.
+
+[01:42 - 01:52]  Each gap becomes a Jira work item, assigned to the owner of that evidence, with the finding and links attached.
+
+[01:52 - 01:57]  Run it again and nothing is duplicated.
+
+[01:57 - 02:02]  The owner updates the Control Plan. Check again.
+
+[02:02 - 02:11]  Readiness moves from 38 to 50 percent, and GateReady shows exactly which requirement changed.
+
+[02:11 - 02:22]  Every check is kept in the gate's history: when, by whom, and how ready it was. That is the audit trail.
+
+[02:22 - 02:29]  Gates, rules, owners and the linked Confluence space are configured per project.
+
+[02:29 - 02:39]  Six rule types cover documents and work items: exists, approved, up to date, required sections, all done, and none open.
+
+[02:39 - 02:46]  Start from the APQP template, copy another project's plan, or build your own.
+
+[02:46 - 02:57]  The Gate Review Agent runs the same deterministic check in conversation and explains each finding.
+
+[02:57 - 03:12]  Rules cannot judge whether content is good enough, so the agent reads the document and gives an opinion, clearly marked as advisory. It never changes a verdict.
+
+[03:12 - 03:19]  Before it writes anything, it shows what it will create and asks.
+
+[03:19 - 03:30]  The review summary is waiting as a Confluence draft: readiness, open gaps, the evidence checklist, and a place for the decision.
+
+[03:30 - 03:43]  After the review, record the gate as passed. GateReady saves the date and the readiness at that moment, and moves the project to its next gate.
+
+[03:43 - 03:55]  The same six actions are exposed as an MCP server and packaged as a reusable skill, so other agents can prepare gate reviews too.
+
+[03:55 - 04:01]  GateReady runs entirely on Atlassian. No data leaves the platform.
+
+[04:01 - 04:11]  GateReady. For quality engineers and project managers who need to know before the gate review, not during it.
+
