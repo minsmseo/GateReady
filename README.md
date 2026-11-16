@@ -41,9 +41,13 @@ Verdicts are computed by plain code, not by a language model, so the same data a
 
 ## Try it (for judges)
 
-Installation link: _to be added before submission_
+**[Install GateReady](https://developer.atlassian.com/console/install/567de6ab-b00b-4ec7-95c7-2c1073e9281e?signature=AYABeLidwtvSKR%2B%2BReVH%2BQnbiCwAAAADAAdhd3Mta21zAEthcm46YXdzOmttczp1cy13ZXN0LTI6NzA5NTg3ODM1MjQzOmtleS83MDVlZDY3MC1mNTdjLTQxYjUtOWY5Yi1lM2YyZGNjMTQ2ZTcAuAECAQB4CxqLTo9l4lqXuFjNim1xJM%2Bp%2F3TVP9xHS2BrU5DRRucBBliUfXdZJ%2F%2B9hz1OVsc5kQAAAH4wfAYJKoZIhvcNAQcGoG8wbQIBADBoBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDLd5DejrdEJKxHA3zAIBEIA7JgOEnFK0caP%2FO4cko5uVuzHPsDcAPgbi%2Bm2HE7PoJJ3azN2t5D47NYIzNLhdK7gFHiNxkB0pbo9rxmQAB2F3cy1rbXMAS2Fybjphd3M6a21zOmV1LXdlc3QtMTo3MDk1ODc4MzUyNDM6a2V5LzQ2MzBjZTZiLTAwYzMtNGRlMi04NzdiLTYyN2UyMDYwZTVjYwC4AQICAHi9bVMAkme4qVQX1fQHo6ePw3H40A7cGfz7yrmSfBWMXgEfqk1wpCv%2BdSTxthb3TNbwAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMzw86NyDeT26NeooHAgEQgDtgL4tI0M3Xas4nVRPNz6N%2BNy2thuNPqYLPeWOS%2FYoBsW6BXrUpywhHbg49vX5F8oXX7w8OzMW7pHeZqAAHYXdzLWttcwBLYXJuOmF3czprbXM6dXMtZWFzdC0xOjcwOTU4NzgzNTI0MzprZXkvNmMxMjBiYTAtNGNkNS00OTg1LWI4MmUtNDBhMDQ5NTJjYzU3ALgBAgIAeDYASx0XCjkny4iLV6vz%2BKtEGSGT6kdt0QRpkn6D%2FlVEAVX0cgjILXCrAezlcLtDkgYAAAB%2BMHwGCSqGSIb3DQEHBqBvMG0CAQAwaAYJKoZIhvcNAQcBMB4GCWCGSAFlAwQBLjARBAy%2FDvaPn8Tskm%2B9smwCARCAO33RqeczbRulSEaNpsU1sRy6Xc6eBnKSBdx76HD%2F5NjmuhJfSs5uQ3YMYkguYVhCFq13xTxn7d33Fy0sAgAAAAAMAAAQAAAAAAAAAAAAAAAAADMMhhvbKpAvVMyketl1qhz%2F%2F%2F%2F%2FAAAAAQAAAAAAAAAAAAAAAQAAADIp6STGr43GwnJXS0LwtyEjsgPufE9fX62GiAjqCNtCuJ5lU9%2Bo4zkQDlNHayYsnEKic5vbFXErptPDLHDfuIYY3MI%3D&product=jira&product=confluence)** (you must be an administrator of the site)
 
-You need a site with Jira and Confluence. Install the app in **Jira first**, then in Confluence.
+The link opens Atlassian's installation screen. Choose your site and install into **Jira**, then open the link again and install into **Confluence**. Both are needed: Jira hosts the app, and the document rules read Confluence.
+
+[Privacy policy](PRIVACY.md)
+
+You need a site with Jira and Confluence.
 
 The Gate Review Agent needs Rovo chat on the site (a "Chat" or "Ask Rovo" button in the top bar). Some free developer sites do not have it. If yours does not, use a Forge demo site, which includes Rovo: run `forge site provision`, then install the app there with `forge install --demo-site`. Everything except the agent works without Rovo.
 
