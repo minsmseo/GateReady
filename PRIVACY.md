@@ -31,6 +31,10 @@ GateReady stores the following in Forge hosted storage, inside your Atlassian si
 
 GateReady stores Atlassian account IDs only as references. It does not store names, email addresses, avatars or any other personal data. Names shown in the app are fetched from Jira at the moment they are displayed, with the permissions of the person looking.
 
+## Logs
+
+When a request to Jira or Confluence fails, GateReady writes a technical log line to Forge's app logs: the rule or action name, the HTTP status, and the API path that failed. A path can contain an identifier such as a page ID, a project ID or an account ID. Log lines never contain page content, work item text or names. Logs are kept by Atlassian under Forge's log retention rules, and a site administrator can turn off the developer's access to them at admin.atlassian.com.
+
 ## Data the app writes to your site
 
 Only when a user asks for it:
