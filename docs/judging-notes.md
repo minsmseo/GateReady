@@ -20,6 +20,7 @@ How GateReady answers each Codegeist 2026 judging criterion, with where to see i
 *Does the project deliver a complete, coherent product experience?*
 
 - **Full path from install to result**: demo data loader > dashboard > gap work items > settings > agent, each reachable from where a user already is in Jira.
+- **The dashboard answers the question first**: a one-line verdict for the gate, then what changed since the last check, then the detail, then the check history. Recording a gate as passed moves the project to its next gate without a trip to settings.
 - **Every state is designed**: no plan yet (with a one-click start), gate never checked, gate with no requirements, plan changed since the last check, no linked space, view-only for non-administrators, loading and error states with a retry.
 - **Writes are confirmed.** The dashboard lists the exact work items before creating them; the agent is instructed to do the same.
 - **Language of the user.** "Gate", "evidence requirement", "owner", "last design change", not "rule engine" or "entity".
@@ -31,6 +32,7 @@ How GateReady answers each Codegeist 2026 judging criterion, with where to see i
 - **Audience**: quality engineers and project managers at automotive part suppliers running APQP-style phase gates.
 - **Problem**: hours of manual evidence checking before each gate, and gaps discovered in the review or in a customer audit.
 - **Addressed in the demo**: a readiness answer in seconds, the specific gaps with owners, and a prepared review summary.
+- **Audit trail**: each gate keeps when it was checked, by whom and how ready it was, and the readiness at the moment it was passed. This is the record a customer or certification auditor asks for.
 - **Adoption cost is low**: it uses the labels, page statuses and JQL teams already have. No new data entry and no migration.
 - **Transferable**: the gate plan is configurable, so the same app fits other gated processes in regulated manufacturing.
 

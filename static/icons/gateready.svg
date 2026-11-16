@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="GateReady">
+  <rect width="48" height="48" rx="10" fill="#1558BC"/>
+  <!-- Gate: two posts and a top bar -->
+  <path d="M11 37V15a4 4 0 0 1 4-4h18a4 4 0 0 1 4 4v22" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Check mark passing through the gate -->
+  <path d="M17.5 26.5l5 5 9-11" fill="none" stroke="#7EE2B8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

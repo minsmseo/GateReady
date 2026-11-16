@@ -100,6 +100,8 @@ export const sanitizePlan = (input, { projectId, projectKey }) => {
       name,
       description: text(gate.description, 300),
       passedOn: isoOrNull(gate.passedOn),
+      // Readiness recorded when the gate was passed from the dashboard.
+      passedReadiness: isoOrNull(gate.passedOn) && Number.isFinite(gate.passedReadiness) ? Math.round(gate.passedReadiness) : null,
       requirements,
     };
   });

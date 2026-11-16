@@ -102,7 +102,7 @@ const EvidenceLinks = ({ evidence }) => {
   );
 };
 
-const GateDetail = ({ gate, result, gaps, siteUrl, busy, onRun, onRaise }) => {
+const GateDetail = ({ gate, result, gaps, history, siteUrl, canEdit, busy, onRun, onRaise, onPass }) => {
   if (!gate.requirements.length) {
     return (
       <EmptyState
@@ -171,11 +171,8 @@ const GateDetail = ({ gate, result, gaps, siteUrl, busy, onRun, onRaise }) => {
           <Text>Run the check again to judge the current requirements.</Text>
         </SectionMessage>
       )}
-      {result.summary.notMet === 0 && result.summary.needsReview === 0 && (
-        <SectionMessage appearance="success" title="All evidence is in place">
-          <Text>Every requirement of this gate is met.</Text>
-        </SectionMessage>
-      )}
+      <GateVerdict gate={gate} result={result} canEdit={canEdit} busy={busy} onPass={onPass} />
+      <ChangesSinceLastCheck result={result} />
       <DynamicTable
         head={{
           cells: [
@@ -189,7 +186,152 @@ const GateDetail = ({ gate, result, gaps, siteUrl, busy, onRun, onRaise }) => {
         }}
         rows={rows}
       />
+      <CheckHistory history={history} />
     </Stack>
+  );
+};
+
+/**
+ * The one-line answer to "can this gate go to review?", with the action
+ * that follows from it.
+ */
+const GateVerdict = ({ gate, result, canEdit, busy, onPass }) => {
+  const { summary } = result;
+  if (gate.passedOn) {
+    const at = gate.passedReadiness === null || gate.passedReadiness === undefined ? '' : ` at ${gate.passedReadiness}% readiness`;
+    return (
+      <SectionMessage appearance="success" title={`Gate passed on ${formatDate(gate.passedOn)}${at}`}>
+        <Text>This gate is recorded as passed. Checks still run against live data, so you can confirm the evidence stays in place.</Text>
+      </SectionMessage>
+    );
+  }
+
+  const passButton = canEdit ? (
+    <Inline>
+      <Button onClick={onPass} isDisabled={busy} appearance={summary.notMet === 0 && summary.needsReview === 0 ? 'primary' : 'default'}>
+        Record gate as passed
+      </Button>
+    </Inline>
+  ) : null;
+
+  if (summary.notMet > 0) {
+    return (
+      <SectionMessage appearance="error" title={`Not ready for gate review: ${summary.notMet} gap${summary.notMet === 1 ? '' : 's'}`}>
+        <Stack space="space.100">
+          <Text>
+            {`${summary.met} of ${summary.total} evidence requirements are met.${
+              summary.needsReview ? ` ${summary.needsReview} more need a reviewer's judgement.` : ''
+            } Assign the gaps to their owners, then run the check again.`}
+          </Text>
+          {passButton}
+        </Stack>
+      </SectionMessage>
+    );
+  }
+  if (summary.needsReview > 0) {
+    return (
+      <SectionMessage appearance="warning" title={`Evidence is in place, ${summary.needsReview} item${summary.needsReview === 1 ? '' : 's'} need a reviewer's judgement`}>
+        <Stack space="space.100">
+          <Text>No requirement is failing. The items marked "Needs review" cannot be decided by a rule; look at them before the gate decision.</Text>
+          {passButton}
+        </Stack>
+      </SectionMessage>
+    );
+  }
+  return (
+    <SectionMessage appearance="success" title="Ready for gate review">
+      <Stack space="space.100">
+        <Text>{`All ${summary.total} evidence requirements are met.`}</Text>
+        {passButton}
+      </Stack>
+    </SectionMessage>
+  );
+};
+
+const VERDICT_WORD = { met: 'Met', not_met: 'Not met', needs_review: 'Needs review' };
+
+/** What moved since the previous check of this gate. */
+const ChangesSinceLastCheck = ({ result }) => {
+  const previous = result.previous;
+  if (!previous || !previous.changes?.length) return null;
+  const improved = result.summary.readiness >= previous.readiness;
+  return (
+    <SectionMessage
+      appearance={improved ? 'information' : 'warning'}
+      title={`Since the check on ${formatDateTime(previous.checkedAt)}: ${previous.readiness}% to ${result.summary.readiness}%`}
+    >
+      <List type="unordered">
+        {previous.changes.map((change) => (
+          <ListItem key={change.requirementId}>{`${change.title}: ${VERDICT_WORD[change.from] || change.from} to ${VERDICT_WORD[change.to] || change.to}`}</ListItem>
+        ))}
+      </List>
+    </SectionMessage>
+  );
+};
+
+/** Audit trail: the last checks of this gate. */
+const CheckHistory = ({ history }) => {
+  if (!history?.length) return null;
+  return (
+    <Stack space="space.100">
+      <Heading as="h4">Check history</Heading>
+      <DynamicTable
+        head={{
+          cells: [
+            { key: 'when', content: 'Checked', width: 25 },
+            { key: 'who', content: 'By', width: 25 },
+            { key: 'readiness', content: 'Readiness', width: 15 },
+            { key: 'counts', content: 'Met / Not met / Needs review', width: 35 },
+          ],
+        }}
+        rows={history.map((entry) => ({
+          key: entry.checkedAt,
+          cells: [
+            { key: 'when', content: <Text>{formatDateTime(entry.checkedAt)}</Text> },
+            { key: 'who', content: <Text>{entry.checkedByName || 'Gate Review Agent or automation'}</Text> },
+            { key: 'readiness', content: <Text weight="medium">{`${entry.readiness}%`}</Text> },
+            { key: 'counts', content: <Text>{`${entry.met} / ${entry.notMet} / ${entry.needsReview} of ${entry.total}`}</Text> },
+          ],
+        }))}
+      />
+    </Stack>
+  );
+};
+
+/** Confirmation before a gate is recorded as passed. */
+const PassGateModal = ({ gate, summary, busy, onConfirm, onClose }) => {
+  const clean = summary.notMet === 0 && summary.needsReview === 0;
+  return (
+    <Modal onClose={onClose}>
+      <ModalHeader>
+        <ModalTitle appearance={clean ? undefined : 'warning'}>{`Record the ${gate.name} gate as passed?`}</ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <Stack space="space.150">
+          <Text>
+            {clean
+              ? `All ${summary.total} evidence requirements are met.`
+              : `${[
+                  summary.notMet ? `${summary.notMet} requirement${summary.notMet === 1 ? ' is' : 's are'} not met` : null,
+                  summary.needsReview ? `${summary.needsReview} need${summary.needsReview === 1 ? 's' : ''} a reviewer's judgement` : null,
+                ]
+                  .filter(Boolean)
+                  .join(' and ')}. Passing with open items is a decision for the gate review; the readiness of ${summary.readiness}% is recorded with the gate.`}
+          </Text>
+          <Text>Today is saved as the pass date and the project moves on to the next gate. You can change the date in GateReady settings.</Text>
+        </Stack>
+      </ModalBody>
+      <ModalFooter>
+        <ButtonGroup>
+          <Button appearance="subtle" onClick={onClose} isDisabled={busy}>
+            Cancel
+          </Button>
+          <Button appearance={clean ? 'primary' : 'warning'} onClick={onConfirm} isLoading={busy}>
+            Record as passed
+          </Button>
+        </ButtonGroup>
+      </ModalFooter>
+    </Modal>
   );
 };
 
@@ -285,6 +427,7 @@ const App = () => {
   const [selected, setSelected] = useState(0);
   const [raise, setRaise] = useState(null);
   const [settingUp, setSettingUp] = useState(false);
+  const [passing, setPassing] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -313,8 +456,12 @@ const App = () => {
     try {
       // One gate at a time keeps each backend call short and shows progress.
       for (const gateId of gateIds) {
-        const result = await call('runCheck', { gateId });
-        setStatus((current) => ({ ...current, results: { ...current.results, [gateId]: result } }));
+        const { history, ...result } = await call('runCheck', { gateId });
+        setStatus((current) => ({
+          ...current,
+          results: { ...current.results, [gateId]: result },
+          histories: { ...current.histories, [gateId]: history },
+        }));
         setBusyGates((current) => current.filter((id) => id !== gateId));
       }
     } catch (error) {
@@ -333,6 +480,20 @@ const App = () => {
       setRaise(null);
       setActionError(error.message);
     }
+  };
+
+  const confirmPass = async () => {
+    setPassing((current) => ({ ...current, busy: true }));
+    try {
+      await call('passGate', { gateId: passing.gate.id });
+      const data = await load();
+      // Follow the project to its new current gate.
+      const index = data?.plan ? data.plan.gates.findIndex((gate) => gate.id === data.plan.currentGateId) : -1;
+      if (index !== -1) setSelected(index);
+    } catch (error) {
+      setActionError(error.message);
+    }
+    setPassing(null);
   };
 
   const loadApqp = async () => {
@@ -361,6 +522,7 @@ const App = () => {
   if (!status) return <Loading label="Loading gate readiness" />;
 
   const { plan, results, gaps, siteUrl, canEdit } = status;
+  const histories = status.histories || {};
 
   if (!plan) {
     return (
@@ -430,9 +592,12 @@ const App = () => {
                   gate={gate}
                   result={results[gate.id]}
                   gaps={gaps}
+                  history={histories[gate.id]}
                   siteUrl={siteUrl}
+                  canEdit={canEdit}
                   busy={busyGates.includes(gate.id)}
                   onRun={() => runChecks([gate.id])}
+                  onPass={() => setPassing({ gate, summary: results[gate.id].summary, busy: false })}
                   onRaise={(items) => setRaise({ gate, items, busy: false, outcome: null })}
                 />
               </Stack>
@@ -452,6 +617,9 @@ const App = () => {
             onConfirm={confirmRaise}
             onClose={() => setRaise(null)}
           />
+        )}
+        {passing && (
+          <PassGateModal gate={passing.gate} summary={passing.summary} busy={passing.busy} onConfirm={confirmPass} onClose={() => setPassing(null)} />
         )}
       </ModalTransition>
     </Page>

@@ -2,7 +2,7 @@ import Resolver from '@forge/resolver';
 import * as jira from '../clients/jira';
 import * as confluence from '../clients/confluence';
 import { buildApqpPlan, copyPlan, getPlan, listPlans, sanitizePlan, savePlan } from '../data/templates.js';
-import { checkGate, getProjectStatus, UserError } from '../services/checks.js';
+import { checkGate, getProjectStatus, passGate, UserError } from '../services/checks.js';
 import { createGapIssues } from '../services/gaps.js';
 import { namePlan } from '../services/people.js';
 import { getSeedStatus, runSeedStep, SEED_STEPS } from '../seed/seed.js';
@@ -70,6 +70,12 @@ define('getStatus', async ({ context }) => {
 define('runCheck', async ({ payload, context }) => {
   const { projectId } = projectOf(context);
   return checkGate({ projectId, gateRef: payload.gateId, accountId: context.accountId, siteUrl: context.siteUrl });
+});
+
+define('passGate', async ({ payload, context }) => {
+  const { projectId } = projectOf(context);
+  await requireProjectAdmin(projectId);
+  return passGate({ projectId, gateRef: payload.gateId, accountId: context.accountId });
 });
 
 define('createGapIssues', async ({ payload, context }) => {

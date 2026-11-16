@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { runGateCheck, summarize } from '../src/engine/evaluate.js';
+import { addToHistory, diffResults, HISTORY_LIMIT, toHistoryEntry } from '../src/engine/diff.js';
 import { extractSections, findSection } from '../src/engine/sections.js';
 import { scopeJql } from '../src/engine/rules/shared.js';
 import { validateRequirement } from '../src/domain/ruleTypes.js';
@@ -275,6 +276,42 @@ test('summary counts verdicts and computes readiness', () => {
 
 test('unknown gate id is rejected', async () => {
   await assert.rejects(() => runGateCheck({ plan: planWith([]), gateId: 'nope', clients: fakeClients() }));
+});
+
+// ---------- Changes between checks and history ----------
+
+const resultWith = (verdicts, checkedAt = '2026-03-15T00:00:00.000Z') => {
+  const items = verdicts.map((verdict, index) => ({ requirementId: `r${index}`, title: `Requirement ${index}`, verdict }));
+  return { checkedAt, checkedBy: { accountId: 'acc-1' }, items, summary: summarize(items) };
+};
+
+test('diff: lists requirements whose verdict changed', () => {
+  const previous = resultWith(['not_met', 'met', 'needs_review'], '2026-03-10T00:00:00.000Z');
+  const current = resultWith(['met', 'met', 'needs_review']);
+  const diff = diffResults(previous, current);
+  assert.equal(diff.readiness, 33);
+  assert.equal(diff.checkedAt, '2026-03-10T00:00:00.000Z');
+  assert.deepEqual(diff.changes, [{ requirementId: 'r0', title: 'Requirement 0', from: 'not_met', to: 'met' }]);
+});
+
+test('diff: null without a previous result, empty when nothing moved', () => {
+  assert.equal(diffResults(null, resultWith(['met'])), null);
+  assert.deepEqual(diffResults(resultWith(['met']), resultWith(['met'])).changes, []);
+});
+
+test('diff: requirements added since the previous check are not reported as changes', () => {
+  const diff = diffResults(resultWith(['met']), resultWith(['met', 'not_met']));
+  assert.deepEqual(diff.changes, []);
+});
+
+test('history: newest first, capped, account id only', () => {
+  let history = [];
+  for (let day = 1; day <= HISTORY_LIMIT + 3; day += 1) {
+    history = addToHistory(history, toHistoryEntry(resultWith(['met', 'not_met'], `2026-03-${String(day).padStart(2, '0')}T00:00:00.000Z`)));
+  }
+  assert.equal(history.length, HISTORY_LIMIT);
+  assert.equal(history[0].checkedAt, '2026-03-13T00:00:00.000Z');
+  assert.deepEqual(history[0], { checkedAt: '2026-03-13T00:00:00.000Z', checkedBy: 'acc-1', readiness: 50, met: 1, notMet: 1, needsReview: 0, total: 2 });
 });
 
 // ---------- Helpers ----------

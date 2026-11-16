@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="Gate Review Agent">
+  <circle cx="48" cy="48" r="48" fill="#123263"/>
+  <!-- Gate -->
+  <path d="M26 70V32a6 6 0 0 1 6-6h32a6 6 0 0 1 6 6v38" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Check mark -->
+  <path d="M36 51l9 9 16-20" fill="none" stroke="#7EE2B8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Spark: the agent -->
+  <path d="M74 14l2.6 6.4L83 23l-6.4 2.6L74 32l-2.6-6.4L65 23l6.4-2.6z" fill="#F5CD47"/>
+</svg>

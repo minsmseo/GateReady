@@ -27,7 +27,9 @@ Each requirement gets one of three verdicts: **Met**, **Not met**, or **Needs re
 
 ## What is in the app
 
-- **Gate readiness dashboard** (Jira project page): readiness bar per gate, verdict and finding per requirement, links to the evidence, "Run check" and "Check all gates".
+- **Gate readiness dashboard** (Jira project page): readiness bar per gate, a one-line answer for the gate ("Not ready for gate review: 5 gaps"), verdict and finding per requirement, links to the evidence, "Run check" and "Check all gates".
+- **What changed, and an audit trail**: every re-check shows what moved since the previous one ("38% to 50%: Control Plan ... Not met to Met"), and each gate keeps a history of its last ten checks with time, person and readiness.
+- **Record a gate as passed**: one action on the dashboard saves the pass date and the readiness at that moment, and moves the project to its next gate.
 - **Gate plan settings** (Jira project settings page): add, edit, reorder and delete gates and evidence requirements, pick owners, link the Confluence space, set the last design change date. Start from the built-in APQP template or copy another project's plan.
 - **Gap work items**: one Jira work item per gap, assigned to the requirement owner, with the finding and evidence links. Running it twice never creates duplicates.
 - **Gate Review Agent** (Rovo agent): checks, explains, lists gaps, creates gap work items after confirmation, reads the evidence to give an advisory opinion, and drafts the gate review summary as a Confluence draft page.
@@ -61,7 +63,7 @@ The Gate Review Agent needs Rovo chat on the site (a "Chat" or "Ask Rovo" button
    | EV Battery Bracket | 38% (3 of 8 met) | PFMEA not approved, Control Plan older than the last design change, MSA plan missing, open tasks, two unresolved high-risk items |
 
 4. **Raise the gaps.** In EV Battery Bracket select **Create work items for 5 gaps** and confirm. Select it again to see that nothing is duplicated.
-5. **Close a gap.** Open the EV Battery Bracket Control Plan page in Confluence, edit and publish it, then select **Run check**. "Control Plan reflects the latest design change" turns to Met.
+5. **Close a gap.** Open the EV Battery Bracket Control Plan page in Confluence, edit and publish it, then select **Run check**. "Control Plan reflects the latest design change" turns to Met, the dashboard shows "38% to 50%", and the check history gains a line.
 6. **Change the rules.** Open Project settings > Apps > **GateReady settings**. Edit a requirement, add your own (any label, any JQL), save, and run the check again.
 7. **Talk to the agent.** Open Rovo chat, choose **Gate Review Agent**, and try:
    - "Is EVB ready for its current gate?"

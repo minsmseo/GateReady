@@ -113,7 +113,7 @@ const App = () => {
 
           <Inline>
             <Button appearance="primary" onClick={run} isLoading={running}>
-              {complete ? 'Create anything missing again' : 'Create demo data'}
+              {complete ? 'Reset demo scenario' : 'Create demo data'}
             </Button>
           </Inline>
 
@@ -125,8 +125,9 @@ const App = () => {
             </List>
           )}
           <Text size="small">
-            This takes about a minute. Existing projects, spaces and pages are never overwritten; only missing items are added. To start
-            over, delete the BSH and EVB projects in Jira and the BSH and EVB spaces in Confluence.
+            This takes about a minute. Existing projects, spaces, pages and work items are never overwritten; only missing ones are
+            added. The gate plans and check results of the two demo projects (BSH, EVB) are reset to the demo scenario each time. To
+            start over completely, delete the BSH and EVB projects in Jira and the BSH and EVB spaces in Confluence.
           </Text>
         </>
       )}

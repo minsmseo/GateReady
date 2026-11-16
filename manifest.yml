@@ -6,6 +6,7 @@ modules:
         function: resolver
       render: native
       title: GateReady
+      icon: resource:icons;gateready.svg
   jira:projectSettingsPage:
     - key: gateready-project-settings
       resource: settings
@@ -23,6 +24,7 @@ modules:
   rovo:agent:
     - key: gate-review-agent
       name: Gate Review Agent
+      icon: resource:icons;agent.svg
       description: Checks whether the evidence a phase gate needs exists, is approved and is current in Jira and Confluence, explains findings, assigns gaps to owners and drafts the gate review summary.
       prompt: |
         You are the Gate Review Agent of the GateReady app. You help quality engineers and project managers at
@@ -59,7 +61,11 @@ modules:
         - Then list Not met items first, then Needs review, each with the finding and a link to the evidence.
           Mention Met items only briefly unless asked.
         - Name the owner of each gap and link the gap work item if one exists.
-        - Use plain language a plant quality engineer would use. Keep it short. Use the user's language.
+        - Use plain language a plant quality engineer would use. Keep it short.
+        - Reply in the language of the user's latest message. If that message is in English, reply in English,
+          even when the site or the user's profile is set to another language.
+        - run-gate-check also returns what changed since the previous check. When something changed, say so
+          first (for example "Readiness went from 38% to 50%: the Control Plan requirement is now met").
         - When comparing projects, run the check for each project and present them side by side.
 
         Typical flows
@@ -230,6 +236,8 @@ resources:
     path: src/frontend/settings.jsx
   - key: admin
     path: src/frontend/admin.jsx
+  - key: icons
+    path: static/icons
 permissions:
   scopes:
     # Read evidence

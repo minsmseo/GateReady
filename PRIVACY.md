@@ -27,7 +27,8 @@ GateReady stores the following in Forge hosted storage, inside your Atlassian si
 - The gate plan of each project: gates, evidence requirements, rule settings, the linked Confluence space key, dates you enter, and the Atlassian account ID of each requirement owner
 - The latest check result for each gate: verdicts, findings, the titles and links of the pages and work items that were checked, and the Atlassian account ID of a work item's assignee
 - Which Jira work item was raised for which gap
-- The Atlassian account ID of the person who last ran a check or saved a plan
+- The check history of each gate: for the last ten checks, the time, the readiness figures and the Atlassian account ID of the person who ran the check
+- The Atlassian account ID of the person who last saved a plan
 
 GateReady stores Atlassian account IDs only as references. It does not store names, email addresses, avatars or any other personal data. Names shown in the app are fetched from Jira at the moment they are displayed, with the permissions of the person looking.
 
