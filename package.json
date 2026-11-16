@@ -1,0 +1,24 @@
+{
+  "name": "gateready",
+  "version": "1.0.0",
+  "description": "Phase gate readiness for manufacturing suppliers, built on Atlassian Forge with a Rovo agent.",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "lint": "eslint src/**/*"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "dependencies": {
+    "@forge/api": "^8.5.0",
+    "@forge/bridge": "7.3.0-next.12",
+    "@forge/kvs": "^2.1.2",
+    "@forge/react": "12.5.0-next.2",
+    "@forge/resolver": "2.0.2",
+    "react": "^18.2.0"
+  }
+}

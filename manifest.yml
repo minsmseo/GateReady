@@ -1,0 +1,261 @@
+modules:
+  jira:projectPage:
+    - key: gateready-project-page
+      resource: dashboard
+      resolver:
+        function: resolver
+      render: native
+      title: GateReady
+  jira:projectSettingsPage:
+    - key: gateready-project-settings
+      resource: settings
+      resolver:
+        function: resolver
+      render: native
+      title: GateReady settings
+  jira:adminPage:
+    - key: gateready-demo-data
+      resource: admin
+      resolver:
+        function: resolver
+      render: native
+      title: GateReady demo data
+  rovo:agent:
+    - key: gate-review-agent
+      name: Gate Review Agent
+      description: Checks whether the evidence a phase gate needs exists, is approved and is current in Jira and Confluence, explains findings, assigns gaps to owners and drafts the gate review summary.
+      prompt: |
+        You are the Gate Review Agent of the GateReady app. You help quality engineers and project managers at
+        manufacturing suppliers get ready for phase gate reviews such as the APQP phases.
+
+        What GateReady does
+        - Each Jira project has a gate plan: an ordered list of gates, and for each gate a list of evidence
+          requirements (for example "PFMEA is approved" or "No unresolved high-risk items").
+        - GateReady evaluates every requirement with deterministic rules over live Jira and Confluence data and
+          returns a verdict: Met, Not met, or Needs review, with a finding and links to the evidence.
+        - A gap is a requirement with verdict Not met.
+
+        Rules you must follow
+        1. Verdicts come only from the actions. Never invent, change, soften or override a verdict. If you think
+           a verdict looks wrong, say so as your opinion and suggest what a person should check.
+        2. Always get facts from an action before answering. Do not answer about readiness from memory or from
+           earlier turns if the user asks for the current state; run the check again.
+        3. If the user did not say which project, use the project the conversation was opened in. If there is
+           none, ask for the Jira project key. If they did not say which gate, omit the gate input so the
+           project's current gate is used, and tell them which gate you used.
+        4. Before any action that writes (create-gap-issues, draft-gate-review-summary): first show the user
+           exactly what will be created (for gaps: each requirement and the owner it will be assigned to; for the
+           summary: the gate and the Confluence space), then ask for confirmation, and only run the action after
+           the user clearly agrees. Never run a write action in the same turn in which you first propose it.
+        5. Your own judgement is advisory. Use get-evidence-content to read a document and comment on whether its
+           content looks sufficient (for example a section that only says "TBD", or controls that do not address
+           the listed causes). Present this under a separate heading "Worth a reviewer's look", clearly apart
+           from the rule verdicts.
+        6. If an action returns an "error" field, tell the user what it says in plain words and what they can do
+           next. Do not retry in a loop.
+
+        How to answer
+        - Lead with the answer: readiness percentage, then counts of Met / Not met / Needs review.
+        - Then list Not met items first, then Needs review, each with the finding and a link to the evidence.
+          Mention Met items only briefly unless asked.
+        - Name the owner of each gap and link the gap work item if one exists.
+        - Use plain language a plant quality engineer would use. Keep it short. Use the user's language.
+        - When comparing projects, run the check for each project and present them side by side.
+
+        Typical flows
+        - "Are we ready for the gate?" -> run-gate-check, then summarise.
+        - "What is missing?" -> list-gaps (run-gate-check first if there is no result yet).
+        - "Assign the gaps" -> list-gaps, show the list with owners, ask to confirm, then create-gap-issues.
+        - "Is the PFMEA good enough?" -> get-evidence-content for that requirement, then give an advisory opinion.
+        - "Prepare the review meeting" -> run-gate-check, optionally get-evidence-content for Needs review items,
+          show what the summary will contain, ask to confirm, then draft-gate-review-summary. Pass your advisory
+          observations in reviewerNotes.
+      conversationStarters:
+        - Is this project ready for its current gate?
+        - What evidence is missing, and who owns it?
+        - Create work items for the open gaps
+        - Draft the gate review summary
+      actions:
+        - get-gate-status
+        - run-gate-check
+        - list-gaps
+        - create-gap-issues
+        - get-evidence-content
+        - draft-gate-review-summary
+      skills:
+        - gate-review-prep
+  rovo:skill:
+    - key: gate-review-prep
+      source:
+        dir: skills/gate-review-prep
+      dependencies:
+        tools:
+          - get-gate-status
+          - run-gate-check
+          - list-gaps
+          - create-gap-issues
+          - get-evidence-content
+          - draft-gate-review-summary
+  rovo:mcp:
+    - key: gateready-mcp
+      name: GateReady
+      tools:
+        - get-gate-status
+        - run-gate-check
+        - list-gaps
+        - create-gap-issues
+        - get-evidence-content
+        - draft-gate-review-summary
+  action:
+    - key: get-gate-status
+      name: Get gate status
+      function: getGateStatus
+      actionVerb: GET
+      description: Returns the stored readiness overview of every gate in a Jira project (current gate, last check time, met and not-met counts). Does not run a new check; use run-gate-check for the current state.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Jira project key, for example BSH. Leave empty to use the project the conversation was opened in.
+    - key: run-gate-check
+      name: Run gate check
+      function: runGateCheck
+      actionVerb: GET
+      description: Runs a fresh readiness check of one gate against live Jira and Confluence data and returns verdict, finding, evidence links and owner per requirement. Use when asked if a project is ready or for current status.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Jira project key, for example BSH. Leave empty to use the project the conversation was opened in.
+        gate:
+          title: Gate
+          type: string
+          required: false
+          description: Gate name or number, for example "Process Design" or "3". Leave empty for the project's current gate.
+    - key: list-gaps
+      name: List gaps
+      function: listGaps
+      actionVerb: GET
+      description: Lists the gaps (Not met requirements) of one gate from the latest check with finding, evidence, owner and any existing work item, plus items needing review. Use when asked what is missing. Does not run a new check.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Jira project key, for example BSH. Leave empty to use the project the conversation was opened in.
+        gate:
+          title: Gate
+          type: string
+          required: false
+          description: Gate name or number. Leave empty for the project's current gate.
+    - key: create-gap-issues
+      name: Create gap work items
+      function: createGapIssues
+      actionVerb: CREATE
+      description: Creates one Jira work item per gap of a gate, assigned to the requirement owner. Skips gaps that already have an open work item. Use only after showing the gaps and owners and getting explicit user confirmation.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Jira project key, for example BSH. Leave empty to use the project the conversation was opened in.
+        gate:
+          title: Gate
+          type: string
+          required: false
+          description: Gate name or number. Leave empty for the project's current gate.
+    - key: get-evidence-content
+      name: Get evidence content
+      function: getEvidenceContent
+      actionVerb: GET
+      description: Returns the content behind one requirement, either Confluence page status, headings and section excerpts or the matching Jira work items. Use to explain a finding or give an advisory opinion on content sufficiency.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Jira project key, for example BSH. Leave empty to use the project the conversation was opened in.
+        gate:
+          title: Gate
+          type: string
+          required: false
+          description: Gate name or number. Leave empty for the project's current gate.
+        requirement:
+          title: Requirement
+          type: string
+          required: true
+          description: Title of the evidence requirement, or a distinctive part of it, for example "PFMEA covers the required sections".
+    - key: draft-gate-review-summary
+      name: Draft gate review summary
+      function: draftGateReviewSummary
+      actionVerb: CREATE
+      description: Creates an unpublished Confluence draft page with the gate review summary (readiness, gaps, evidence checklist, decision section) from the latest check. Use only after explicit user confirmation.
+      inputs:
+        projectKey:
+          title: Project key
+          type: string
+          required: false
+          description: Jira project key, for example BSH. Leave empty to use the project the conversation was opened in.
+        gate:
+          title: Gate
+          type: string
+          required: false
+          description: Gate name or number. Leave empty for the project's current gate.
+        reviewerNotes:
+          title: Reviewer notes
+          type: string
+          required: false
+          description: Optional advisory observations from the agent to include in a clearly marked section. They never change verdicts.
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: getGateStatus
+      handler: index.getGateStatus
+    - key: runGateCheck
+      handler: index.runGateCheck
+    - key: listGaps
+      handler: index.listGaps
+    - key: createGapIssues
+      handler: index.createGapIssues
+    - key: getEvidenceContent
+      handler: index.getEvidenceContent
+    - key: draftGateReviewSummary
+      handler: index.draftGateReviewSummary
+resources:
+  - key: dashboard
+    path: src/frontend/index.jsx
+  - key: settings
+    path: src/frontend/settings.jsx
+  - key: admin
+    path: src/frontend/admin.jsx
+permissions:
+  scopes:
+    # Read evidence
+    - read:jira-work
+    - read:jira-user
+    - read:confluence-content.summary
+    - read:page:confluence
+    - read:label:confluence
+    - read:space:confluence
+    # Raise gap work items and write the gate review summary page
+    - write:jira-work
+    - write:page:confluence
+    # Demo data loader only (Jira admin page)
+    - manage:jira-configuration
+    - write:confluence-space
+    - write:confluence-content
+    # Forge hosted storage
+    - storage:app
+app:
+  runtime:
+    name: nodejs24.x
+    memoryMB: 256
+    architecture: arm64
+  id: ari:cloud:ecosystem::app/567de6ab-b00b-4ec7-95c7-2c1073e9281e
+  compatibility:
+    jira:
+      required: true
+    confluence:
+      required: false
