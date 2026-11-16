@@ -129,8 +129,7 @@ const seedPlan = async (demo, accountId) => {
   const project = await findJiraProject(demo.key);
   if (!project) throw new UserError(`Create the Jira project ${demo.key} first.`);
 
-  const me = await jira.getMyself();
-  const owner = { accountId, displayName: me.displayName || 'Project owner' };
+  const owner = { accountId };
   const now = Date.now();
 
   const plan = buildApqpPlan({ projectId: project.id, projectKey: demo.key, spaceKey: demo.key });

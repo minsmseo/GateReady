@@ -99,7 +99,8 @@ export const runGateCheck = async ({ plan, gateId, clients, siteUrl, now = new D
         requirementId: requirement.id,
         title: requirement.title,
         ruleType: requirement.ruleType,
-        owner: requirement.owner || null,
+        // Account id only: results are stored and must not hold names.
+        owner: requirement.owner?.accountId ? { accountId: requirement.owner.accountId } : null,
         verdict: outcome.verdict,
         reason: outcome.reason,
         evidence: outcome.evidence || [],

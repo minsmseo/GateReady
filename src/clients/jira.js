@@ -42,6 +42,7 @@ const toIssue = (issue) => ({
   // status name a team picked ("Closed", "Released", ...).
   done: issue.fields?.status?.statusCategory?.key === 'done',
   assignee: issue.fields?.assignee?.displayName || null,
+  assigneeId: issue.fields?.assignee?.accountId || null,
   priority: issue.fields?.priority?.name || null,
 });
 
@@ -76,7 +77,27 @@ export const getSiteUrl = async ({ as = 'user' } = {}) => {
   return String(info.baseUrl || '').replace(/\/$/, '');
 };
 
-export const getMyself =({ as = 'user' } = {}) => send('jira', as, route`/rest/api/3/myself`);
+/**
+ * Looks up display names for account ids. Names are never stored by
+ * GateReady; they are fetched when something is shown.
+ * @returns {Object<string, string>} accountId -> display name (missing when not visible)
+ */
+export const getDisplayNames = async (accountIds, { as = 'user' } = {}) => {
+  const unique = [...new Set(accountIds.filter(Boolean))].slice(0, 50);
+  const entries = await Promise.all(
+    unique.map(async (accountId) => {
+      try {
+        const user = await send('jira', as, route`/rest/api/3/user?accountId=${accountId}`);
+        return [accountId, user.displayName || null];
+      } catch (error) {
+        return [accountId, null];
+      }
+    })
+  );
+  return Object.fromEntries(entries.filter(([, name]) => name));
+};
+
+export const getMyself = ({ as = 'user' } = {}) => send('jira', as, route`/rest/api/3/myself`);
 
 // ----- Used only by the demo data loader -----
 

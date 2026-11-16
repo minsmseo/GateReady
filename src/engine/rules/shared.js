@@ -25,7 +25,10 @@ export const issueEvidence = (issue, siteUrl) => ({
   id: issue.key,
   title: `${issue.key} ${issue.summary}`,
   url: siteUrl ? `${siteUrl}/browse/${issue.key}` : null,
-  detail: [issue.status, issue.assignee ? `assigned to ${issue.assignee}` : 'unassigned'].join(', '),
+  // Results are stored, so no person's name goes in here: only the status
+  // and the assignee's account id. The name is looked up when displayed.
+  detail: issue.status,
+  assigneeId: issue.assigneeId || null,
 });
 
 /**

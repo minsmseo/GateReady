@@ -84,9 +84,9 @@ export const sanitizePlan = (input, { projectId, projectKey }) => {
             ? params.approvedStates.map((s) => text(s, 40)).filter(Boolean).slice(0, 10)
             : undefined,
         },
-        owner: requirement.owner?.accountId
-          ? { accountId: text(requirement.owner.accountId, 128), displayName: text(requirement.owner.displayName, 120) }
-          : null,
+        // Only the account id is stored. Names are personal data and are
+        // looked up when shown (see services/people.js).
+        owner: requirement.owner?.accountId ? { accountId: text(requirement.owner.accountId, 128) } : null,
       };
       // JSON storage drops undefined, but strip here so tests and callers see a clean object.
       Object.keys(clean.params).forEach((key) => clean.params[key] === undefined && delete clean.params[key]);
@@ -120,8 +120,20 @@ export const sanitizePlan = (input, { projectId, projectKey }) => {
   return { plan, problems };
 };
 
+/** Removes anything but the account id from requirement owners. */
+const stripNames = (plan) => ({
+  ...plan,
+  gates: plan.gates.map((gate) => ({
+    ...gate,
+    requirements: gate.requirements.map((requirement) => ({
+      ...requirement,
+      owner: requirement.owner?.accountId ? { accountId: requirement.owner.accountId } : null,
+    })),
+  })),
+});
+
 export const savePlan = async (plan, accountId) => {
-  const stored = { ...plan, updatedAt: new Date().toISOString(), updatedBy: accountId || null };
+  const stored = { ...stripNames(plan), updatedAt: new Date().toISOString(), updatedBy: accountId || null };
   await set(planKey(plan.projectId), stored);
   return stored;
 };

@@ -205,6 +205,16 @@ test('all done: not met and lists the open work items', async () => {
   assert.equal(item.evidence[0].url, 'https://example.test/browse/BSH-2');
 });
 
+test('stored results hold account ids, never names', async () => {
+  const rule = { ...allDoneRule, owner: { accountId: 'acc-1', displayName: 'Dana Example' } };
+  const { result } = await check(rule, { issues: [issue('BSH-2', false, { assignee: 'Sam Example', assigneeId: 'acc-2' })] });
+  const stored = JSON.stringify(result);
+  assert.ok(!stored.includes('Dana Example'));
+  assert.ok(!stored.includes('Sam Example'));
+  assert.deepEqual(result.items[0].owner, { accountId: 'acc-1' });
+  assert.equal(result.items[0].evidence[0].assigneeId, 'acc-2');
+});
+
 test('all done: needs review when nothing matches', async () => {
   const { item } = await check(allDoneRule, { issues: [] });
   assert.equal(item.verdict, 'needs_review');

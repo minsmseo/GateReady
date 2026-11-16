@@ -3,6 +3,7 @@ import { VERDICT, RULE_TYPES } from '../domain/ruleTypes.js';
 import { getGapLinks, getResult, saveGapLink } from '../data/results.js';
 import { projectClause } from '../engine/rules/shared.js';
 import { requirePlan, resolveGate, UserError } from './checks.js';
+import { nameResult } from './people.js';
 
 export const GAP_LABEL = 'gateready-gap';
 
@@ -13,10 +14,11 @@ export const GAP_LABEL = 'gateready-gap';
 export const listGaps = async ({ projectId, gateRef, siteUrl }) => {
   const plan = await requirePlan(projectId);
   const gate = resolveGate(plan, gateRef);
-  const result = await getResult(projectId, gate.id);
-  if (!result) {
+  const stored = await getResult(projectId, gate.id);
+  if (!stored) {
     throw new UserError(`The ${gate.name} gate has not been checked yet. Run a check first.`, 'no_result');
   }
+  const result = await nameResult(stored);
   const links = await getGapLinks(projectId);
   const gaps = result.items
     .filter((item) => item.verdict === VERDICT.NOT_MET)

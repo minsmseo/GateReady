@@ -3,6 +3,7 @@ import * as confluence from '../clients/confluence';
 import { runGateCheck } from '../engine/evaluate.js';
 import { getPlan } from '../data/templates.js';
 import { getGapLinks, getResultsByGate, saveResult } from '../data/results.js';
+import { nameResult, withNames } from './people.js';
 
 /** Thrown for problems the user can fix; the message is shown as-is. */
 export class UserError extends Error {
@@ -58,8 +59,9 @@ export const checkGate = async ({ projectId, gateRef, accountId, siteUrl }) => {
     siteUrl,
     checkedBy: accountId ? { accountId } : null,
   });
+  // The stored result holds account ids only; names are added for display.
   await saveResult(result);
-  return result;
+  return nameResult(result);
 };
 
 /** Everything the dashboard needs: the plan, latest results and raised gaps. */
@@ -76,5 +78,12 @@ export const getProjectStatus = async (projectId) => {
     const stale = result.items.length !== ids.size || result.items.some((item) => !ids.has(item.requirementId));
     current[gate.id] = { ...result, stale };
   }
-  return { plan, results: current, gaps };
+
+  const gateIds = Object.keys(current);
+  const named = await withNames({ plan, results: gateIds.map((gateId) => current[gateId]) });
+  return {
+    plan: named.plan,
+    results: Object.fromEntries(gateIds.map((gateId, index) => [gateId, named.results[index]])),
+    gaps,
+  };
 };

@@ -4,6 +4,7 @@ import * as confluence from '../clients/confluence';
 import { buildApqpPlan, copyPlan, getPlan, listPlans, sanitizePlan, savePlan } from '../data/templates.js';
 import { checkGate, getProjectStatus, UserError } from '../services/checks.js';
 import { createGapIssues } from '../services/gaps.js';
+import { namePlan } from '../services/people.js';
 import { getSeedStatus, runSeedStep, SEED_STEPS } from '../seed/seed.js';
 
 const resolver = new Resolver();
@@ -89,7 +90,7 @@ define('getSettings', async ({ context }) => {
   const otherProjects = plans
     .filter((other) => other.projectId !== projectId)
     .map((other) => ({ projectId: other.projectId, projectKey: other.projectKey, gates: other.gates.length }));
-  return { plan, projectKey, canEdit, otherProjects };
+  return { plan: await namePlan(plan), projectKey, canEdit, otherProjects };
 });
 
 define('loadTemplate', async ({ payload, context }) => {
@@ -110,7 +111,7 @@ define('loadTemplate', async ({ payload, context }) => {
     plan.spaceKey = existing.spaceKey;
     plan.baselineDate = existing.baselineDate;
   }
-  return savePlan(plan, context.accountId);
+  return namePlan(await savePlan(plan, context.accountId));
 });
 
 define('savePlan', async ({ payload, context }) => {
@@ -118,7 +119,7 @@ define('savePlan', async ({ payload, context }) => {
   await requireProjectAdmin(project.projectId);
   const { plan, problems } = sanitizePlan(payload.plan, project);
   if (problems.length) throw new UserError(problems.slice(0, 5).join(' '), 'invalid_plan');
-  return savePlan(plan, context.accountId);
+  return namePlan(await savePlan(plan, context.accountId));
 });
 
 define('checkSpace', async ({ payload }) => {

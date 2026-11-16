@@ -2,6 +2,7 @@ import * as confluence from '../clients/confluence';
 import { VERDICT, VERDICT_LABEL } from '../domain/ruleTypes.js';
 import { getGapLinks, getResult } from '../data/results.js';
 import { requirePlan, resolveGate, UserError } from '../services/checks.js';
+import { nameResult } from '../services/people.js';
 import { action, resolveProject } from './shared.js';
 
 const escape = (value) =>
@@ -74,8 +75,9 @@ export const draftGateReviewSummary = action('draft-gate-review-summary', async 
   const project = await resolveProject(payload);
   const plan = await requirePlan(project.projectId);
   const gate = resolveGate(plan, payload.gate);
-  const result = await getResult(project.projectId, gate.id);
-  if (!result) throw new UserError(`The ${gate.name} gate has not been checked yet. Run a gate check first.`);
+  const stored = await getResult(project.projectId, gate.id);
+  if (!stored) throw new UserError(`The ${gate.name} gate has not been checked yet. Run a gate check first.`);
+  const result = await nameResult(stored);
   if (!plan.spaceKey) throw new UserError('No Confluence space is linked to this project. Set one in Project settings > GateReady settings.');
 
   const space = await confluence.getSpaceByKey(plan.spaceKey);
